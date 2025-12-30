@@ -20,8 +20,6 @@ User inputed directory to scan: filez
     - filez/filez/dogs/labrador.txt
     - filez/filez/dogs/labrador1.txt
 ```
-```
-```
 
 ## Usage
 
