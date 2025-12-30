@@ -87,8 +87,6 @@ pub fn gather_files(directory: &String) -> Result<FileMap, Box<dyn std::error::E
             let file_size = metadata.len();
             let file_path = entry.path().to_path_buf();
 
-            println!("{}", file_path.display());
-
             file_map.add_file(file_size, file_path.display().to_string());
         }
     }
