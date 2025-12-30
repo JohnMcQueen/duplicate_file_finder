@@ -138,7 +138,7 @@ mod tests {
 
         let duplicates = file_map.get_duplicates();
 
-        assert_eq!(duplicates.len(), 1); // Only one size group has duplicates
+        assert_eq!(duplicates.len(), 1);
         assert!(duplicates.contains_key("100"));
         assert_eq!(duplicates.get("100").unwrap().len(), 2);
     }
