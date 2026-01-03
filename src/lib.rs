@@ -1,3 +1,4 @@
+use rayon::prelude::*;
 use sha2::{Digest, Sha256};
 use std::collections::HashMap;
 use std::fs::File;
@@ -37,26 +38,65 @@ impl FileMap {
         }
     }
 
-    pub fn find_true_duplicates(&self) -> Result<(), Box<dyn std::error::Error>> {
-        for (_, files) in &self.files {
-            // Only hash if there are duplicates potentially
-            if files.len() > 1 {
-                let mut hashed_files: HashMap<String, Vec<String>> = HashMap::new();
+    // TODO: leaving original implementation to test against multithreading performance
 
-                for file_path in files {
-                    let hash = hash_files(file_path)?;
-                    hashed_files
-                        .entry(hash)
-                        .or_default()
-                        .push(file_path.clone());
+    //   pub fn find_true_duplicates(&self) -> Result<(), Box<dyn std::error::Error>> {
+    //       for (_, files) in &self.files {
+    //           // Only hash if there are duplicates potentially
+    //           if files.len() > 1 {
+    //               let mut hashed_files: HashMap<String, Vec<String>> = HashMap::new();
+
+    //               for file_path in files {
+    //                   let hash = hash_files(file_path)?;
+    //                   hashed_files
+    //                       .entry(hash)
+    //                       .or_default()
+    //                       .push(file_path.clone());
+    //               }
+
+    //               // TODO: printing for now but in future should do something with the duplicates
+    //               for (hash, paths) in &hashed_files {
+    //                   if paths.len() > 1 {
+    //                       println!(" Duplicates found (hash: {})", hash);
+    //                       for path in paths {
+    //                           println!("    - {}", path);
+    //                       }
+    //                   }
+    //               }
+    //           }
+    //       }
+
+    //       Ok(())
+    //   }
+
+    pub fn find_true_duplicates(&self) -> Result<(), Box<dyn std::error::Error>> {
+        for files in self.files.values() {
+            if files.len() > 1 {
+                // hashing in parallel
+                let results: Vec<Result<(String, String), String>> = files
+                    .par_iter()
+                    .map(|file_path| {
+                        let hash = hash_files(file_path).map_err(|e| e.to_string())?;
+                        Ok((hash, file_path.clone()))
+                    })
+                    .collect();
+
+                let mut hashed_files: HashMap<String, Vec<String>> = HashMap::new();
+                for result in results {
+                    match result {
+                        Ok((hash, path)) => {
+                            hashed_files.entry(hash).or_default().push(path);
+                        }
+                        Err(e) => eprintln!("Error hashing file: {}", e),
+                    }
                 }
 
-                // TODO: printing for now but in future should do something with the duplicates
+                // TODO: printing for now but in future should return the duplicates
                 for (hash, paths) in &hashed_files {
                     if paths.len() > 1 {
                         println!(" Duplicates found (hash: {})", hash);
                         for path in paths {
-                            println!("    - {}", path);
+                            println!("     - {}", path);
                         }
                     }
                 }
