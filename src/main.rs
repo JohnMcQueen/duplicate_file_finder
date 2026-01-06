@@ -1,17 +1,16 @@
 use duplicate_finder::gather_files;
-use std::env;
+use inquire::Text;
 
 fn main() {
     // collecting user input directory to scan
-    let args: Vec<String> = env::args().collect();
+    let query = match gather_user_input() {
+        Ok(directory) => directory,
+        Err(e) => {
+            eprintln!("Error getting user input: {}", e);
+            std::process::exit(1);
+        }
+    };
 
-    if args.len() < 2 {
-        eprintln!("Error: Missing directory argument");
-        eprintln!("Usage: {} <directory>", args[0]);
-        std::process::exit(1);
-    }
-
-    let query = &args[1];
     println!("User inputed directory to scan: {query}");
 
     match gather_files(query) {
@@ -22,4 +21,8 @@ fn main() {
             eprintln!("Error gathering files: {}", e);
         }
     }
+}
+
+fn gather_user_input() -> std::result::Result<String, inquire::InquireError> {
+    Text::new("What directory would you like scanned?").prompt()
 }

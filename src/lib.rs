@@ -107,7 +107,7 @@ impl FileMap {
     }
 }
 
-pub fn check_for_duplicates(directory: &String) {
+pub fn check_for_duplicates(directory: String) {
     let file_map = gather_files(directory);
 
     match file_map {
@@ -116,7 +116,7 @@ pub fn check_for_duplicates(directory: &String) {
     }
 }
 
-pub fn gather_files(directory: &String) -> Result<FileMap, Box<dyn std::error::Error>> {
+pub fn gather_files(directory: String) -> Result<FileMap, Box<dyn std::error::Error>> {
     let mut file_map = FileMap::default();
 
     for entry in WalkDir::new(directory) {

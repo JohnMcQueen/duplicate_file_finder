@@ -5,6 +5,7 @@ edition = "2024"
 
 [dependencies]
 clap = "4.5.53"
+inquire = "0.9.1"
 rayon = "1.11.0"
 sha2 = "0.10.9"
 walkdir = "2.5.0"

@@ -60,11 +60,11 @@ cargo llvm-cov --open
 - ✅ SHA-256 hash-based duplicate verification
 - ✅ Basic console output
 - ✅ Unit tests with coverage tracking
+- ✅ Multi-thread file hashing
 
 ## Limitations
 
 - **Read-only**: Only reports duplicates, does not delete or modify files
-- **Single-threaded**: Files are hashed sequentially (large directories may be slow)
 - **Memory usage**: Stores all file paths in memory
 - **Symbolic links**: May not handle symlinks correctly
 - **No progress indication**: No feedback during long-running scans
@@ -72,7 +72,6 @@ cargo llvm-cov --open
 ## Future Enhancements
 
 - Interactive mode to select which duplicates to delete
-- Parallel/multi-threaded hashing for improved performance
 - Progress bar for large directory scans
 - Export results to JSON/CSV format
 - Whitelist/blacklist file patterns
